@@ -6,6 +6,7 @@ package installer
 import (
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
 
 	"github.com/openshift/installer/pkg/asset/installconfig"
 	"github.com/openshift/installer/pkg/asset/releaseimage"
@@ -59,7 +60,11 @@ func (m *manager) applyInstallConfigCustomisations(installConfig *installconfig.
 		m.log.Errorf("Error loading ARO manifests: %v", err)
 		return nil, err
 	} else {
-		m.log.Infof("Found ARO manifests: %v, %d", found, len(aroManifests.FileList))
+		if !found {
+			m.log.Errorf("Failed to load any manifests")
+			return nil, fmt.Errorf("failed to load any manifests")
+		}
+		m.log.Infof("Found %d ARO manifests", len(aroManifests.FileList))
 	}
 
 	g := graph.Graph{}
